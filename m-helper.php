@@ -4,8 +4,9 @@ namespace m;
 
 /**
  * This file is purely a helper for your IDE.  It mocks many of the
- * default static functions available to the "m" Class via the __callStatic
- * magic method (which IDEs don't pick up).
+ * default Core functions available to the "m" Class via the __callStatic
+ * magic method (which IDEs don't pick up).  It also mocks the default containers
+ * and helper containers.
  */
 
 class m
