@@ -27,6 +27,68 @@ m\m::bind('form', function(array $rules = array())
 });
 
 /**
+ * Creates a form using an array of fields.
+ */
+m\m::bind('buildForm', function(array $fields)
+{
+
+    $form       = m\m::form();
+    $validator  = m\m::validator();
+
+    // Run through each field
+    foreach($fields as $name => $data) {
+
+        // Skip this field if no type is given
+        if (!isset($data['type']))
+            continue;
+
+        // Make sure attributes is an array
+        if (!isset($data['attributes']) || !is_array($data['attributes']))
+            $data['attributes'] = array();
+
+        // If validation rules are provided, add them to the validator
+        if (isset($data['rules']))
+            $validator->setRulesFor($name, $data['rules']);
+
+        // Create the field element
+        switch($data['type']) {
+
+            case 'text':
+            case 'email':
+            case 'submit':
+                $field = new m\Html\Fields\InputField($name, $data['type'], $data['attributes']);
+                break;
+
+            case 'select':
+            case 'dropdown':
+                if (!isset($data['options']))
+                    continue;
+
+                $field = new m\Html\Fields\SelectField($name, $data['options'], $data['attributes']);
+                break;
+
+            case 'textarea':
+                $field = new m\Html\Fields\TextareaField($name, $data['attributes']);
+                break;
+
+            default:
+                continue;
+
+        }
+
+        // Set the field object in the form
+        $form->setField($name, $field);
+
+    }
+
+    return (object) array(
+        'form'      => $form,
+        'validator' => $validator
+    );
+
+});
+
+/**
  * Creates a new PDO object and supplies it with
  * the default and given configurations.
  */
