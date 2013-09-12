@@ -3,7 +3,7 @@
 namespace m;
 
 /**
- * This file is purely for a helper for your IDE.  It mocks many of the
+ * This file is purely a helper for your IDE.  It mocks many of the
  * default static functions available to the "m" Class via the __callStatic
  * magic method (which IDEs don't pick up).
  */
