@@ -1,6 +1,6 @@
 {
     "require": {
-        "heroicteam/m-php-framework": "dev-master"
+        "heroicteam/m": "dev-master"
     },
     "autoload": {
         "classmap": [
