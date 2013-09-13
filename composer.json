@@ -1,0 +1,17 @@
+"repositories": [
+    {
+        "type": "package",
+        "package": {
+        "name": "HeroicTeam/m-php-framework",
+        "version": "master",
+        "source": {
+            "url": "https://github.com/HeroicTeam/m-php-framework.git",
+            "type": "git",
+            "reference": "master"
+            }
+        }
+    }
+],
+"require": {
+    "HeroicTeam/m-php-framework": "master"
+}
