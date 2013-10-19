@@ -191,19 +191,6 @@ class m
      ********************************/
 
     /**
-     * Creates and configures a form and validator object based on the
-     * given array and then returns a standard php object with the form
-     * and validator as public properties.
-     *
-     * @param array $fields
-     * @return \StdObject
-     */
-    public static function buildForm(array $fields)
-    {
-        return (object) array();
-    }
-
-    /**
      * Returns a new file object or resolves "plainfile" if a valid resolution key
      * ($use) is not given or successfully assumed.
      *

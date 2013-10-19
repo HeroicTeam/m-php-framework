@@ -8,10 +8,10 @@
  * @param bool $multipart
  * @return \m\Html\Form
  */
-m\m::bind('form', function($action = '', $method = 'post', $multipart = false)
+m\m::bind('form', function($action = '', $method = 'post', $multipart = false, $core)
 {
     // Get the session object
-    $session = m\m::session();
+    $session = $core->make('session');
 
     // Create the Form object
     $form = new m\Html\Form($action, $method, $multipart);
@@ -43,10 +43,10 @@ m\m::bind('plainfile', function($filepath)
  * @param array $headers
  * @return \m\Http\Response
  */
-m\m::bind('response', function($body = '', $status = 200, array $headers = array())
+m\m::bind('response', function($body = '', $status = 200, array $headers = array(), $core)
 {
     // Get the current Session object
-    $session    = m\m::session();
+    $session    = $core->make('session');
 
     // Create the Response object
     $response   = new m\Http\Response($body, $status, $headers);
@@ -75,10 +75,10 @@ m\m::singleton('session', function($id = null)
  * @param array $rules
  * @return \m\Validation\Validator
  */
-m\m::bind('validator', function(array $rules = array())
+m\m::bind('validator', function(array $rules = array(), $core)
 {
     // Get the session object
-    $session    = m\m::session();
+    $session    = $core->make('session');
 
     // Create the Validator object
     $validator  = new m\Validation\Validator($rules);
@@ -97,11 +97,11 @@ m\m::bind('validator', function(array $rules = array())
  * @param string|null $directory
  * @return \m\View\GenericView
  */
-m\m::bind('view', function ($file, $directory = null)
+m\m::bind('view', function ($file, $directory = null, $core)
 {
     // Determine the filepath
     if (null === $directory)
-        $directory = m\m::get('view_dir');
+        $directory = $core->get('view_dir');
 
     // Create the view object
     $view = new m\View\GenericView($directory);
@@ -119,73 +119,6 @@ m\m::bind('view', function ($file, $directory = null)
  ********************************/
 
 /**
- * Creates and configures a form and validator object based on the
- * given array and then returns a standard php object with the form
- * and validator as public properties.
- *
- * @param array $fields
- * @return \StdObject
- */
-m\m::bind('buildForm', function(array $fields)
-{
-
-    $form       = m\m::form();
-    $validator  = m\m::validator();
-
-    // Run through each field
-    foreach($fields as $name => $data) {
-
-        // Skip this field if no type is given
-        if (!isset($data['type']))
-            continue;
-
-        // Make sure attributes is an array
-        if (!isset($data['attributes']) || !is_array($data['attributes']))
-            $data['attributes'] = array();
-
-        // If validation rules are provided, add them to the validator
-        if (isset($data['rules']))
-            $validator->setRulesFor($name, $data['rules']);
-
-        // Create the field element
-        switch($data['type']) {
-
-            case 'text':
-            case 'email':
-            case 'submit':
-                $field = new m\Html\Fields\InputField($name, $data['type'], $data['attributes']);
-                break;
-
-            case 'select':
-            case 'dropdown':
-                if (!isset($data['options']))
-                    continue;
-
-                $field = new m\Html\Fields\SelectField($name, $data['options'], $data['attributes']);
-                break;
-
-            case 'textarea':
-                $field = new m\Html\Fields\TextareaField($name, $data['attributes']);
-                break;
-
-            default:
-                continue;
-
-        }
-
-        // Set the field object in the form
-        $form->setField($name, $field);
-
-    }
-
-    return (object) array(
-        'form'      => $form,
-        'validator' => $validator
-    );
-
-});
-
-/**
  * Returns a new file object or resolves "plainfile" if a valid resolution key
  * ($use) is not given or successfully assumed.
  *
@@ -193,7 +126,7 @@ m\m::bind('buildForm', function(array $fields)
  * @param null|string $use
  * @return object|null
  */
-m\m::bind('open', function ($filepath, $use = null)
+m\m::bind('open', function ($filepath, $use = null, $core)
 {
     // If a specific resolution key is not given, assume one based
     // on the file extension (.json would be json_file).
@@ -201,7 +134,7 @@ m\m::bind('open', function ($filepath, $use = null)
         $use = pathinfo($filepath, PATHINFO_EXTENSION).'_file';
 
     // If a valid resolution is found, return it
-    if ($found = m\m::make($use, array($filepath, true))) {
+    if ($found = $core->make($use, array($filepath, true))) {
 
         // Call the open method, if available
         if (method_exists($found, 'open'))
@@ -211,7 +144,7 @@ m\m::bind('open', function ($filepath, $use = null)
     }
 
     // Otherwise return the default file object
-    return m\m::make('plainfile', array($filepath))->open();
+    return $core->make('plainfile', array($filepath))->open();
 });
 
 /**
@@ -221,10 +154,10 @@ m\m::bind('open', function ($filepath, $use = null)
  * @param array $config
  * @return \PDO
  */
-m\m::singleton('pdo', function(array $config = array())
+m\m::singleton('pdo', function(array $config = array(), $core)
 {
     // Get the db settings
-    $db  = array_merge(m::get('database', array()), $config);
+    $db  = array_merge($core->get('database', array()), $config);
 
     // Capture the DSN
     $dsn = isset($db['dsn']) ? $db['dsn'] : $db['type'].':host='.$db['host'].';dbname='.$db['name'];
@@ -239,10 +172,10 @@ m\m::singleton('pdo', function(array $config = array())
  * @param string url
  * @return \m\Http\Response
  */
-m\m::bind('redirect', function ($url)
+m\m::bind('redirect', function ($url, $core)
 {
     // Create the response object
-    $response = m\m::response();
+    $response = $core->make('response');
 
     // Call the redirect helper method
     $response->redirect($url);
